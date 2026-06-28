@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Magna CaaS — Vehicle Compliance Platform</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --red:        #C8102E;
+  --red-hover:  #A50D25;
+  --red-light:  rgba(200,16,46,0.08);
+  --red-mid:    rgba(200,16,46,0.15);
+  --dark:       #1A1A1A;
+  --dark-nav:   #111111;
+  --gray-900:   #1A1A1A;
+  --gray-700:   #3D3D3D;
+  --gray-500:   #6B6B6B;
+  --gray-400:   #8A8A8A;
+  --gray-300:   #C4C4C4;
+  --gray-200:   #E0E0E0;
+  --gray-100:   #F2F2F2;
+  --gray-50:    #F8F8F8;
+  --white:      #FFFFFF;
+  --amber:      #D97706;
+  --amber-bg:   rgba(217,119,6,0.08);
+  --green:      #059669;
+  --green-bg:   rgba(5,150,105,0.08);
+  --blue:       #2563EB;
+  --blue-bg:    rgba(37,99,235,0.08);
+  --purple:     #7C3AED;
+  --purple-bg:  rgba(124,58,237,0.08);
+  --error:      #DC2626;
+  --error-bg:   rgba(220,38,38,0.08);
+  --border:     #E0E0E0;
+  --shadow-sm:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-lg:  0 12px 32px rgba(0,0,0,0.10), 0 4px 8px rgba(0,0,0,0.06);
+  --radius:     6px;
+  --radius-lg:  10px;
+}
+
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--gray-50);
+  color:var(--gray-900);
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  font-size:14px;
+  line-height:1.5;
+}
+h1,h2,h3,h4,.brand{font-family:'Space Grotesk',sans-serif}
+input,select,textarea,button{font-family:inherit}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── LOGIN SCREEN ── */
+#login-screen{
+  display:flex;min-height:100vh;
+  background:var(--gray-50);
+}
+.login-left{
+  width:50%;background:var(--dark-nav);
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:48px;position:relative;overflow:hidden;
+}
+.login-left::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,#1a0006 0%,#111111 40%,#1a0308 100%);
+  opacity:.8;
+}
+.login-left-content{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justify-content:center}
+.login-brand{position:relative;z-index:1;margin-bottom:auto}
+.login-logo-svg{height:32px;width:auto}
+.login-hero-text{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:42px;font-weight:800;color:#fff;
+  line-height:1.1;letter-spacing:-0.02em;margin-bottom:20px;
+}
+.login-hero-text span{color:var(--red)}
+.login-hero-sub{
+  font-size:15px;color:rgba(255,255,255,0.55);
+  line-height:1.6;max-width:380px;margin-bottom:36px;
+}
+.login-frameworks{display:flex;flex-wrap:wrap;gap:8px}
+.fw-chip{
+  font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  padding:4px 10px;border-radius:3px;
+}
+.fw-chip.red{background:rgba(200,16,46,.2);color:#ff8099;border:1px solid rgba(200,16,46,.3)}
+.fw-chip.white{background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.12)}
+.login-footer-text{position:relative;z-index:1;font-size:11px;color:rgba(255,255,255,.3);margin-top:auto;padding-top:40px}
+
+.login-right{
+  width:50%;background:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  padding:48px;
+}
+.login-card{width:100%;max-width:420px;animation:fadeIn .4s ease-out}
+.login-card-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:26px;font-weight:700;color:var(--gray-900);
+  margin-bottom:6px;
+}
+.login-card-sub{font-size:13px;color:var(--gray-500);margin-bottom:32px}
+
+/* Tabs */
+.auth-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:28px}
+.auth-tab{
+  padding:10px 0;margin-right:24px;
+  font-size:13px;font-weight:600;color:var(--gray-400);
+  cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;
+  transition:all .15s;
+}
+.auth-tab.active{color:var(--red);border-bottom-color:var(--red)}
+.auth-tab:hover:not(.active){color:var(--gray-700)}
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fadeIn .2s ease-out}
+
+/* Form */
+.form-group{margin-bottom:18px}
+.form-group label{
+  display:block;font-size:11px;font-weight:700;
+  color:var(--gray-500);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;
+}
+.form-group input,.form-group select{
+  width:100%;padding:11px 14px;
+  background:var(--gray-50);border:1.5px solid var(--border);
+  border-radius:var(--radius);color:var(--gray-900);font-size:14px;
+  transition:border-color .15s,box-shadow .15s;outline:none;
+}
+.form-group input:focus,.form-group select:focus{
+  border-color:var(--red);
+  box-shadow:0 0 0 3px rgba(200,16,46,0.08);
+  background:var(--white);
+}
+.form-group select option{background:var(--white)}
+
+/* Buttons */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 22px;border-radius:var(--radius);font-size:13px;font-weight:600;
+  cursor:pointer;border:none;transition:all .15s;text-decoration:none;
+  letter-spacing:.01em;
+}
+.btn-primary{background:var(--red);color:#fff}
+.btn-primary:hover{background:var(--red-hover);transform:translateY(-1px);box-shadow:0 4px 12px rgba(200,16,46,0.3)}
+.btn-dark{background:var(--dark);color:#fff}
+.btn-dark:hover{background:var(--gray-700)}
+.btn-ghost{background:transparent;color:var(--gray-700);border:1.5px solid var(--border)}
+.btn-ghost:hover{background:var(--gray-50);border-color:var(--gray-300)}
+.btn-full{width:100%}
+.btn:disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
+
+/* Demo buttons */
+.demo-row{margin-top:20px;border-top:1px solid var(--border);padding-top:16px}
+.demo-label{font-size:11px;color:var(--gray-400);margin-bottom:10px;text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+.demo-pills{display:flex;flex-wrap:wrap;gap:6px}
+.demo-pill{
+  padding:5px 12px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;
+  background:var(--gray-100);color:var(--gray-700);border:1px solid var(--border);
+  transition:all .15s;
+}
+.demo-pill:hover{background:var(--red);color:#fff;border-color:var(--red)}
+
+#auth-error{display:none;margin-top:12px;padding:10px 14px;background:var(--error-bg);border:1px solid rgba(220,38,38,.2);border-radius:var(--radius);font-size:13px;color:var(--error)}
+
+/* ── APP LAYOUT ── */
+#app-screen{display:none;flex-direction:column;min-height:100vh}
+
+/* Topbar — dark like magna.com nav */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 32px;height:60px;
+  background:var(--dark-nav);
+  position:sticky;top:0;z-index:100;
+}
+.topbar-left{display:flex;align-items:center;gap:20px}
+.topbar-logo{display:flex;align-items:center}
+.topbar-logo svg{height:24px;width:auto}
+.topbar-divider{width:1px;height:20px;background:rgba(255,255,255,0.15)}
+.topbar-subtitle{font-size:11px;font-weight:600;color:rgba(255,255,255,0.45);text-transform:uppercase;letter-spacing:.08em}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.chain-pill{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:5px 12px;
+}
+.chain-dot{width:6px;height:6px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;flex-shrink:0}
+.chain-label{font-size:11px;color:rgba(255,255,255,.7);font-weight:500}
+.user-pill{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  border-radius:20px;padding:5px 14px;
+}
+.user-avatar{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--red);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;font-weight:700;color:#fff;flex-shrink:0;
+}
+.user-name{font-size:12px;font-weight:600;color:rgba(255,255,255,.85)}
+.user-role-tag{font-size:10px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.05em}
+.btn-signout{
+  padding:6px 14px;border-radius:4px;font-size:12px;font-weight:600;
+  background:transparent;color:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.12);
+  cursor:pointer;transition:all .15s;
+}
+.btn-signout:hover{background:rgba(255,255,255,.08);color:rgba(255,255,255,.85)}
+
+/* App body */
+.app-body{display:flex;flex:1}
+
+/* Sidebar */
+.sidebar{
+  width:230px;flex-shrink:0;background:var(--white);
+  border-right:1px solid var(--border);
+  padding:24px 0;
+  display:flex;flex-direction:column;
+  position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto;
+}
+.nav-section{margin-bottom:4px}
+.nav-section-label{
+  font-size:10px;font-weight:700;color:var(--gray-400);
+  text-transform:uppercase;letter-spacing:.09em;
+  padding:12px 20px 6px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 20px;
+  font-size:13px;font-weight:500;color:var(--gray-500);
+  cursor:pointer;transition:all .12s;
+  border-left:3px solid transparent;
+}
+.nav-item:hover{background:var(--gray-50);color:var(--gray-900)}
+.nav-item.active{
+  background:var(--red-light);color:var(--red);
+  border-left-color:var(--red);font-weight:600;
+}
+.nav-icon{width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-icon svg{width:16px;height:16px}
+
+/* Main */
+.main{flex:1;background:var(--gray-50);min-height:calc(100vh - 60px)}
+.page{display:none}
+.page.active{display:block;animation:fadeIn .25s ease-out}
+.page-header{
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  padding:24px 32px;
+  margin-bottom:28px;
+}
+.page-title{font-size:22px;font-weight:700;color:var(--gray-900);margin-bottom:3px;font-family:'Space Grotesk',sans-serif}
+.page-sub{font-size:13px;color:var(--gray-500)}
+.page-content{padding:0 32px 32px}
+
+/* Cards */
+.card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:24px;
+  box-shadow:var(--shadow-sm);
+}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.card-title{font-size:14px;font-weight:700;color:var(--gray-900);font-family:'Space Grotesk',sans-serif}
+.card-sub{font-size:12px;color:var(--gray-400);margin-top:2px}
+
+/* Stats */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-top:3px solid var(--accent,var(--red));
+  border-radius:var(--radius-lg);
+  padding:20px;
+  box-shadow:var(--shadow-sm);
+  transition:box-shadow .15s,transform .15s;
+}
+.stat-card:hover{box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.stat-icon{margin-bottom:12px;color:var(--accent,var(--red))}
+.stat-icon svg{width:22px;height:22px}
+.stat-value{font-size:30px;font-weight:800;color:var(--gray-900);font-family:'Space Grotesk',sans-serif;line-height:1}
+.stat-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-400);margin-top:5px}
+.stat-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-weight:700;padding:2px 7px;
+  border-radius:3px;margin-top:8px;
+  text-transform:uppercase;letter-spacing:.05em;
+}
+
+/* Compliance grid */
+.compliance-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-bottom:28px}
+.compliance-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:20px;
+  box-shadow:var(--shadow-sm);
+  border-left:4px solid var(--fw-color,var(--red));
+}
+.compliance-fw{font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--fw-color,var(--red));margin-bottom:8px}
+.compliance-name{font-size:14px;font-weight:700;color:var(--gray-900);margin-bottom:4px;font-family:'Space Grotesk',sans-serif}
+.compliance-desc{font-size:12px;color:var(--gray-500);line-height:1.5}
+.compliance-status{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--gray-500);margin-top:12px}
+.status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* Forms */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.col-span-2{grid-column:span 2}
+.field{margin-bottom:16px}
+.field label{
+  display:block;font-size:11px;font-weight:700;
+  color:var(--gray-500);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px;
+}
+.field input,.field select,.field textarea{
+  width:100%;padding:10px 13px;
+  background:var(--white);border:1.5px solid var(--border);
+  border-radius:var(--radius);color:var(--gray-900);font-size:14px;
+  transition:border-color .15s,box-shadow .15s;outline:none;
+}
+.field textarea{resize:vertical;min-height:90px}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--red);box-shadow:0 0 0 3px rgba(200,16,46,0.08);
+}
+.field select option{background:var(--white)}
+
+/* File drop */
+.file-drop{
+  border:2px dashed var(--border);border-radius:var(--radius-lg);
+  padding:32px 20px;text-align:center;cursor:pointer;
+  transition:all .15s;background:var(--gray-50);
+}
+.file-drop:hover,.file-drop.drag-over{
+  border-color:var(--red);background:var(--red-light);
+}
+.file-drop-icon{margin-bottom:8px;display:flex;justify-content:center;color:var(--gray-400)}
+.file-drop-icon svg{width:30px;height:30px}
+.file-drop-text{font-size:14px;font-weight:500;color:var(--gray-700)}
+.file-drop-sub{font-size:12px;color:var(--gray-400);margin-top:4px}
+
+/* Result box */
+.result-box{
+  background:var(--gray-50);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:20px;margin-top:20px;display:none;
+}
+.result-box.show{display:block;animation:fadeIn .25s ease-out}
+.result-box.success{border-color:rgba(5,150,105,.3);background:rgba(5,150,105,.04)}
+.result-box.error{border-color:rgba(220,38,38,.3);background:rgba(220,38,38,.04)}
+.result-title{font-size:13px;font-weight:700;color:var(--gray-900);margin-bottom:14px;display:flex;align-items:center;gap:8px;font-family:'Space Grotesk',sans-serif}
+.result-title svg{width:16px;height:16px;flex-shrink:0}
+.result-box.success .result-title svg{color:var(--green)}
+.result-box.error .result-title svg{color:var(--error)}
+.result-field{margin-bottom:10px}
+.result-label{font-size:10px;font-weight:700;color:var(--gray-400);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.result-value{font-size:12px;color:var(--gray-700);word-break:break-all;background:var(--gray-100);padding:7px 10px;border-radius:var(--radius);font-family:'SF Mono','Fira Code',monospace}
+.result-value.hash{color:var(--red)}
+.result-value.tx{color:var(--amber)}
+.result-value.valid{color:var(--green)}
+.result-value.invalid{color:var(--error)}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.badge-red{background:var(--red-light);color:var(--red);border:1px solid rgba(200,16,46,.2)}
+.badge-amber{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(217,119,6,.2)}
+.badge-green{background:var(--green-bg);color:var(--green);border:1px solid rgba(5,150,105,.2)}
+.badge-blue{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(37,99,235,.2)}
+.badge-purple{background:var(--purple-bg);color:var(--purple);border:1px solid rgba(124,58,237,.2)}
+.badge-gray{background:var(--gray-100);color:var(--gray-600);border:1px solid var(--border)}
+/* Keep old alias for compat */
+.badge-cyan{background:var(--red-light);color:var(--red);border:1px solid rgba(200,16,46,.2)}
+
+/* Tables */
+.table-wrap{overflow-x:auto;border-radius:var(--radius)}
+table{width:100%;border-collapse:collapse}
+th{
+  font-size:10px;font-weight:700;color:var(--gray-400);
+  text-transform:uppercase;letter-spacing:.07em;
+  padding:10px 14px;border-bottom:1.5px solid var(--border);
+  text-align:left;background:var(--gray-50);
+}
+td{font-size:13px;color:var(--gray-700);padding:12px 14px;border-bottom:1px solid var(--gray-100)}
+tr:hover td{background:var(--gray-50)}
+.vin-code{font-family:'SF Mono','Fira Code',monospace;color:var(--gray-900);font-size:12px;font-weight:600}
+.tx-code{font-family:'SF Mono','Fira Code',monospace;color:var(--amber);font-size:11px}
+
+/* Alert */
+.alert{padding:12px 16px;border-radius:var(--radius);font-size:13px;display:flex;align-items:flex-start;gap:10px;margin-bottom:16px}
+.alert-info{background:var(--blue-bg);border:1px solid rgba(37,99,235,.2);color:#1D4ED8}
+.alert-warn{background:var(--amber-bg);border:1px solid rgba(217,119,6,.2);color:var(--amber)}
+.alert-success{background:var(--green-bg);border:1px solid rgba(5,150,105,.2);color:var(--green)}
+.alert-error{background:var(--error-bg);border:1px solid rgba(220,38,38,.2);color:var(--error)}
+
+/* Toast */
+#toast-container{position:fixed;top:72px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{
+  background:var(--dark);
+  border-radius:var(--radius);padding:12px 16px;min-width:280px;max-width:360px;
+  box-shadow:var(--shadow-lg);
+  display:flex;align-items:flex-start;gap:10px;
+  animation:slideDown .25s cubic-bezier(.16,1,.3,1);
+}
+.toast.success{border-left:3px solid var(--green)}
+.toast.error{border-left:3px solid var(--error)}
+.toast.info{border-left:3px solid var(--blue)}
+.toast-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.toast-body{flex:1}
+.toast-title{font-size:13px;font-weight:600;color:#fff}
+.toast-msg{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+
+/* Spinner */
+.spinner{width:18px;height:18px;border:2px solid rgba(200,16,46,.2);border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+.spinner-white{border-color:rgba(255,255,255,.2);border-top-color:#fff}
+
+/* Tabs (in pages) */
+.tabs{display:flex;gap:0;border-bottom:1.5px solid var(--border);margin-bottom:24px}
+.tab{padding:10px 20px;font-size:13px;font-weight:500;color:var(--gray-400);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1.5px;transition:all .15s}
+.tab.active{color:var(--red);border-bottom-color:var(--red);font-weight:600}
+.tab:hover:not(.active){color:var(--gray-700)}
+.tab-panel{display:none}
+.tab-panel.active{display:block;animation:fadeIn .2s ease-out}
+
+/* Divider */
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+
+/* Role badges */
+.role-engineer{background:rgba(200,16,46,.08);color:var(--red);border:1px solid rgba(200,16,46,.2)}
+.role-compliance_officer{background:var(--purple-bg);color:var(--purple);border:1px solid rgba(124,58,237,.2)}
+.role-auditor{background:var(--amber-bg);color:var(--amber);border:1px solid rgba(217,119,6,.2)}
+.role-regulator{background:var(--green-bg);color:var(--green);border:1px solid rgba(5,150,105,.2)}
+.role-admin{background:var(--gray-900);color:#fff;border:1px solid var(--gray-700)}
+.role-pending{background:var(--gray-100);color:var(--gray-400);border:1px solid var(--border)}
+
+/* Event type accents */
+.type-OTA_UPDATE{--accent:var(--red)}
+.type-AI_ADAS_DECISION{--accent:var(--purple)}
+.type-SUPPLY_CHAIN_EVENT{--accent:var(--amber)}
+.type-INCIDENT_EVIDENCE{--accent:var(--error)}
+.type-SOFTWARE_ACTIVATION{--accent:var(--green)}
+
+/* Tooltip */
+[data-tip]{position:relative;cursor:help}
+[data-tip]:hover::after{
+  content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;
+  transform:translateX(-50%);background:var(--dark);color:#fff;
+  font-size:11px;padding:5px 10px;border-radius:4px;
+  white-space:nowrap;pointer-events:none;z-index:200;
+}
+
+/* Responsive */
+@media(max-width:1024px){
+  .login-left{display:none}
+  .login-right{width:100%}
+}
+@media(max-width:900px){
+  .sidebar{width:56px}
+  .sidebar .nav-item span:not(.nav-icon){display:none}
+  .sidebar .nav-section-label{display:none}
+  .form-grid,.form-grid-3{grid-template-columns:1fr}
+  .col-span-2{grid-column:span 1}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .page-header{padding:16px 20px}
+  .page-content{padding:0 20px 20px}
+}
+@media(max-width:600px){
+  .stats-grid{grid-template-columns:1fr}
+  .topbar{padding:0 16px}
+  .topbar-subtitle{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     LOGIN
+═══════════════════════════════════════════ -->
+<div id="login-screen">
+
+  <!-- Left: Brand panel -->
+  <div class="login-left">
+    <div class="login-brand">
+      <svg class="login-logo-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 145" role="img" aria-label="Magna">
+        <path fill="#fff" d="M181.1 42.6h38l14 53h.9c.7-4.4 1.3-9.1 2.6-13.4l11.5-39.6h37.6l16.7 100.8h-35.7l-5-55.2h-.7c-.7 3.3-1.3 6.8-2.4 10l-14.7 45.2h-21.6l-13.2-42.7c-1.1-4.3-2-8.3-2.3-12.6h-1.2c-.3 4-.5 8.2-.9 12.2l-4.3 43.1h-35.7l16.4-100.8z"/>
+        <path fill="#fff" d="M332.7 143.4h-39.1L329 42.6h40.9l36.3 100.8H367l-3.4-12.6h-27.9l-3 12.6zm24.4-36.5l-4.3-17.8c-1.1-4.3-1.8-8.7-2.4-13h-1.3l-6.7 30.8h14.7z"/>
+        <path fill="#fff" d="M506.5 84c-.3 16.5-.3 30.2-12.3 43.1-10.8 11.6-27.4 17.9-43.2 17.9-31 0-56.1-19-56.1-51.4 0-32.9 24.4-52.7 56.4-52.7 17.7 0 41.9 8.7 49.9 25.9l-34.5 12.6c-2.8-5.1-8.1-7.8-14-7.8-13.2 0-20.5 11.2-20.5 23.4 0 11.1 7 21.5 19 21.5 5.8 0 13.2-2.7 15-8.8h-16.7V84h57zm2.8-41.4h35.5L578 98.5h1.1c-1.5-8.4-3.1-17.1-3.1-25.7V42.6h35.3v100.8H576l-32.5-53h-1.1c1.2 7 2.3 13.5 2.3 20.2v32.8h-35.3V42.6z"/>
+        <path fill="#fff" d="M646.7 143.4h-39.1l35.3-100.8h40.9L720 143.4h-39.1l-3.4-12.6h-27.9l-2.9 12.6zm24.4-36.5l-4.3-17.8c-1.1-4.3-1.7-8.7-2.4-13H663l-6.7 30.8h14.8zM82.3 0C72 0 63.7 8.3 63.7 18.5S72 37 82.3 37s18.6-8.3 18.6-18.5S92.6 0 82.3 0m26 143.5h38.3L109.7 42.8H81.6l-5.1 14M0 143.5h57.1L28.5 65.7m35.1 77.8h38.3L65 42.8H37l-5.2 14"/>
+      </svg>
+    </div>
+    <div class="login-left-content">
+      <div class="login-hero-text">Compliance<br><span>Infrastructure</span><br>for the SDV Era.</div>
+      <div class="login-hero-sub">Cryptographically immutable evidence anchored on Reltime's Decentralised Compliance Infrastructure — built for UNECE R155/R156, EU AI Act, SDVerse, and the US Connected Vehicle Rule.</div>
+      <div class="login-frameworks">
+        <span class="fw-chip red">UNECE R155/R156</span>
+        <span class="fw-chip red">EU AI Act</span>
+        <span class="fw-chip white">SDVerse</span>
+        <span class="fw-chip white">US CVR · MY2027</span>
+        <span class="fw-chip white">Reltime DCI · Chain 32323</span>
+      </div>
+    </div>
+    <div class="login-footer-text">© 2026 Magna International Inc. · Vehicle Compliance Platform</div>
+  </div>
+
+  <!-- Right: Login form -->
+  <div class="login-right">
+    <div class="login-card">
+      <div class="login-card-title">Sign In</div>
+      <div class="login-card-sub">Access the Vehicle Compliance Platform</div>
+
+      <div class="auth-tabs">
+        <div class="auth-tab active" onclick="switchAuthTab('login')">Sign In</div>
+        <div class="auth-tab" onclick="switchAuthTab('register')">Register</div>
+      </div>
+
+      <!-- Login -->
+      <div id="tab-login" class="tab-panel active">
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="login-email" placeholder="you@magna.com" autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="login()" id="login-btn" style="margin-top:4px">
+          Sign In
+        </button>
+        <div class="demo-row">
+          <div class="demo-label">Demo credentials</div>
+          <div class="demo-pills">
+            <span class="demo-pill" onclick="fillDemo('admin@magna-caas.com','Admin@MagnaCaaS2026!')">Admin</span>
+            <span class="demo-pill" onclick="fillDemo('stefan.weber@magna.com','Eng@Stefan2026!')">Engineer</span>
+            <span class="demo-pill" onclick="fillDemo('claire.dubois@magna.com','CO@Claire2026!')">Compliance</span>
+            <span class="demo-pill" onclick="fillDemo('anna.schmidt@compliance.magna.com','Audit@Anna2026!')">Auditor</span>
+            <span class="demo-pill" onclick="fillDemo('inspector@unece.org','Reg@UNECE2026!')">Regulator</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Register -->
+      <div id="tab-register" class="tab-panel">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" id="reg-name" placeholder="Your name">
+        </div>
+        <div class="form-group">
+          <label>Email Address</label>
+          <input type="email" id="reg-email" placeholder="you@magna.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="reg-password" placeholder="Minimum 8 characters">
+        </div>
+        <div class="form-group">
+          <label>OEM Tenant</label>
+          <select id="reg-tenant">
+            <option value="magna">Magna International</option>
+            <option value="bmw">BMW Group</option>
+            <option value="mercedes">Mercedes-Benz</option>
+            <option value="volkswagen">Volkswagen Group</option>
+            <option value="gm">General Motors</option>
+            <option value="stellantis">Stellantis</option>
+            <option value="ford">Ford Motor Company</option>
+            <option value="toyota">Toyota</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="register()" id="register-btn">Create Account</button>
+        <div class="alert alert-info" style="margin-top:14px;font-size:12px">New accounts receive "pending" status. An admin assigns your role.</div>
+      </div>
+
+      <div id="auth-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     APP
+═══════════════════════════════════════════ -->
+<div id="app-screen">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 145" height="22" role="img" aria-label="Magna">
+          <path fill="#fff" d="M181.1 42.6h38l14 53h.9c.7-4.4 1.3-9.1 2.6-13.4l11.5-39.6h37.6l16.7 100.8h-35.7l-5-55.2h-.7c-.7 3.3-1.3 6.8-2.4 10l-14.7 45.2h-21.6l-13.2-42.7c-1.1-4.3-2-8.3-2.3-12.6h-1.2c-.3 4-.5 8.2-.9 12.2l-4.3 43.1h-35.7l16.4-100.8z"/>
+          <path fill="#fff" d="M332.7 143.4h-39.1L329 42.6h40.9l36.3 100.8H367l-3.4-12.6h-27.9l-3 12.6zm24.4-36.5l-4.3-17.8c-1.1-4.3-1.8-8.7-2.4-13h-1.3l-6.7 30.8h14.7z"/>
+          <path fill="#fff" d="M506.5 84c-.3 16.5-.3 30.2-12.3 43.1-10.8 11.6-27.4 17.9-43.2 17.9-31 0-56.1-19-56.1-51.4 0-32.9 24.4-52.7 56.4-52.7 17.7 0 41.9 8.7 49.9 25.9l-34.5 12.6c-2.8-5.1-8.1-7.8-14-7.8-13.2 0-20.5 11.2-20.5 23.4 0 11.1 7 21.5 19 21.5 5.8 0 13.2-2.7 15-8.8h-16.7V84h57zm2.8-41.4h35.5L578 98.5h1.1c-1.5-8.4-3.1-17.1-3.1-25.7V42.6h35.3v100.8H576l-32.5-53h-1.1c1.2 7 2.3 13.5 2.3 20.2v32.8h-35.3V42.6z"/>
+          <path fill="#fff" d="M646.7 143.4h-39.1l35.3-100.8h40.9L720 143.4h-39.1l-3.4-12.6h-27.9l-2.9 12.6zm24.4-36.5l-4.3-17.8c-1.1-4.3-1.7-8.7-2.4-13H663l-6.7 30.8h14.8zM82.3 0C72 0 63.7 8.3 63.7 18.5S72 37 82.3 37s18.6-8.3 18.6-18.5S92.6 0 82.3 0m26 143.5h38.3L109.7 42.8H81.6l-5.1 14M0 143.5h57.1L28.5 65.7m35.1 77.8h38.3L65 42.8H37l-5.2 14"/>
+        </svg>
+      </div>
+      <div class="topbar-divider"></div>
+      <div class="topbar-subtitle">Compliance Platform</div>
+    </div>
+    <div class="topbar-right">
+      <div class="chain-pill">
+        <div class="chain-dot" id="chain-dot-indicator"></div>
+        <span class="chain-label" id="chain-status-text">Connecting...</span>
+      </div>
+      <div class="user-pill">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div>
+          <div class="user-name" id="user-name-display">—</div>
+          <div class="user-role-tag" id="user-role-display">—</div>
+        </div>
+      </div>
+      <button class="btn-signout" onclick="logout()">Sign Out</button>
+    </div>
+  </header>
+
+  <div class="app-body">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="nav-section">
+        <div class="nav-section-label">Overview</div>
+        <div class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg></span><span>Dashboard</span>
+        </div>
+        <div class="nav-item" onclick="showPage('events-list')" id="nav-events-list">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h.01"/><path d="M3 18h.01"/><path d="M3 6h.01"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M8 6h13"/></svg></span><span>Event Log</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Submit Evidence</div>
+        <div class="nav-item" onclick="showPage('anchor-event')" id="nav-anchor-event">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m17 8-5-5-5 5"/><path d="M5 21h14"/></svg></span><span>Anchor Event</span>
+        </div>
+        <div class="nav-item" onclick="showPage('upload-payload')" id="nav-upload-payload">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg></span><span>Upload Payload</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Verify</div>
+        <div class="nav-item" onclick="showPage('check-integrity')" id="nav-check-integrity">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.79 17 5 19 5a1 1 0 0 1 1 1Z"/><path d="m9 12 2 2 4-4"/></svg></span><span>Check Integrity</span>
+        </div>
+        <div class="nav-item" onclick="showPage('lookup-event')" id="nav-lookup-event">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><span>VIN Lookup</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Compliance</div>
+        <div class="nav-item" onclick="showPage('audit-summary')" id="nav-audit-summary">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M7 11v5"/><path d="M11 7v9"/><path d="M15 9v7"/><path d="M19 5v11"/></svg></span><span>Audit Summary</span>
+        </div>
+        <div class="nav-item" onclick="showPage('admin-panel')" id="nav-admin-panel" style="display:none">
+          <span class="nav-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span><span>Admin</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="page-header">
+          <div class="page-title">Compliance Dashboard</div>
+          <div class="page-sub">Real-time cryptographic evidence layer — Reltime Decentralised Compliance Infrastructure</div>
+        </div>
+        <div class="page-content">
+
+          <div class="stats-grid">
+            <div class="stat-card type-OTA_UPDATE">
+              <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19.1"/></svg></div>
+              <div class="stat-value" id="stat-ota">—</div>
+              <div class="stat-label">OTA Updates</div>
+              <div class="stat-badge" style="background:var(--red-light);color:var(--red)">UNECE R156</div>
+            </div>
+            <div class="stat-card type-AI_ADAS_DECISION">
+              <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M9 2v2"/><path d="M15 20v2"/><path d="M9 20v2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M2 15h2"/><path d="M2 9h2"/></svg></div>
+              <div class="stat-value" id="stat-ai">—</div>
+              <div class="stat-label">AI / ADAS Decisions</div>
+              <div class="stat-badge" style="background:var(--purple-bg);color:var(--purple)">EU AI Act</div>
+            </div>
+            <div class="stat-card type-SUPPLY_CHAIN_EVENT">
+              <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+              <div class="stat-value" id="stat-supply">—</div>
+              <div class="stat-label">Supply Chain Events</div>
+              <div class="stat-badge" style="background:var(--amber-bg);color:var(--amber)">SDVerse</div>
+            </div>
+            <div class="stat-card type-INCIDENT_EVIDENCE">
+              <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div>
+              <div class="stat-value" id="stat-incident">—</div>
+              <div class="stat-label">Incident Records</div>
+              <div class="stat-badge" style="background:var(--error-bg);color:var(--error)">Liability</div>
+            </div>
+            <div class="stat-card type-SOFTWARE_ACTIVATION">
+              <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V3.2"/></svg></div>
+              <div class="stat-value" id="stat-software">—</div>
+              <div class="stat-label">SW Activations</div>
+              <div class="stat-badge" style="background:var(--green-bg);color:var(--green)">R156 CVR</div>
+            </div>
+            <div class="stat-card" style="--accent:#1A1A1A">
+              <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg></div>
+              <div class="stat-value" id="stat-total">—</div>
+              <div class="stat-label">Total On-Chain</div>
+              <div class="stat-badge" style="background:var(--gray-100);color:var(--gray-700)">Reltime Layer 1</div>
+            </div>
+          </div>
+
+          <!-- Compliance mandates -->
+          <div style="margin-bottom:8px;font-size:13px;font-weight:700;color:var(--gray-900);font-family:'Space Grotesk',sans-serif">Active Compliance Mandates</div>
+          <div class="compliance-grid" style="margin-bottom:28px">
+            <div class="compliance-card" style="--fw-color:var(--red)">
+              <div class="compliance-fw">UNECE R155 / R156</div>
+              <div class="compliance-name">OTA &amp; Software Tracking</div>
+              <div class="compliance-desc">Mandatory for all EU type approvals since July 2024. Cryptographic software provenance per VIN.</div>
+              <div class="compliance-status"><span class="status-dot" style="background:var(--green)"></span>Active · Immediate</div>
+            </div>
+            <div class="compliance-card" style="--fw-color:var(--purple)">
+              <div class="compliance-fw">EU AI Act</div>
+              <div class="compliance-name">ADAS Governance</div>
+              <div class="compliance-desc">High-risk AI enforcement from August 2026. Auditable ADAS decision logs for DRIVE AGX Thor.</div>
+              <div class="compliance-status"><span class="status-dot" style="background:var(--amber)"></span>Enforcement Aug 2026</div>
+            </div>
+            <div class="compliance-card" style="--fw-color:var(--amber)">
+              <div class="compliance-fw">SDVerse</div>
+              <div class="compliance-name">Trusted Supply Chain</div>
+              <div class="compliance-desc">Verifiable supplier identity and component provenance for governed software marketplace.</div>
+              <div class="compliance-status"><span class="status-dot" style="background:var(--blue)"></span>Strategic</div>
+            </div>
+            <div class="compliance-card" style="--fw-color:var(--error)">
+              <div class="compliance-fw">US Connected Vehicle Rule</div>
+              <div class="compliance-name">Software Sovereignty</div>
+              <div class="compliance-desc">Post-Polestar decision: independent cryptographic proof of software provenance for US market.</div>
+              <div class="compliance-status"><span class="status-dot" style="background:var(--error)"></span>MY2027 · Urgent</div>
+            </div>
+          </div>
+
+          <!-- Recent events -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Recent Compliance Events</div>
+                <div class="card-sub">Latest anchored evidence on Reltime Layer 1</div>
+              </div>
+              <button class="btn btn-ghost" style="font-size:12px;padding:7px 14px" onclick="loadEvents()">↻ Refresh</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr>
+                  <th>Event ID</th><th>Type</th><th>VIN</th><th>OEM</th><th>Submitted</th><th>Owner</th>
+                </tr></thead>
+                <tbody id="recent-events-body">
+                  <tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:24px">Loading events...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- EVENT LOG -->
+      <div class="page" id="page-events-list">
+        <div class="page-header">
+          <div class="page-title">Compliance Event Log</div>
+          <div class="page-sub">Full history of anchored evidence on the Reltime blockchain</div>
+        </div>
+        <div class="page-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">All Anchored Events</div>
+              <button class="btn btn-ghost" style="font-size:12px;padding:7px 14px" onclick="loadEvents()">↻ Refresh</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr>
+                  <th>Event ID</th><th>Type</th><th>VIN</th><th>OEM</th><th>File</th><th>Submitted</th>
+                </tr></thead>
+                <tbody id="all-events-body">
+                  <tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:24px">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANCHOR EVENT -->
+      <div class="page" id="page-anchor-event">
+        <div class="page-header">
+          <div class="page-title">Anchor Compliance Event</div>
+          <div class="page-sub">Submit a SHA-256 hash to the Reltime blockchain. Use this when you already have the hash.</div>
+        </div>
+        <div class="page-content">
+          <div class="card">
+            <div class="form-grid">
+              <div class="field">
+                <label>Event ID *</label>
+                <input type="text" id="anchor-eventId" placeholder="e.g. VW-OTA-2026-001 or UUID">
+              </div>
+              <div class="field">
+                <label>Event Type *</label>
+                <select id="anchor-eventType">
+                  <option value="">— Select type —</option>
+                  <option value="OTA_UPDATE">OTA Update (UNECE R156)</option>
+                  <option value="AI_ADAS_DECISION">AI / ADAS Decision (EU AI Act)</option>
+                  <option value="SUPPLY_CHAIN_EVENT">Supply Chain Event (SDVerse)</option>
+                  <option value="INCIDENT_EVIDENCE">Incident Evidence (Liability)</option>
+                  <option value="SOFTWARE_ACTIVATION">Software Activation (R156 CVR)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Vehicle VIN (optional)</label>
+                <input type="text" id="anchor-vin" placeholder="17-char VIN e.g. WBA3A5C50DF000001" maxlength="17">
+              </div>
+              <div class="field">
+                <label>IPFS Metadata CID (optional)</label>
+                <input type="text" id="anchor-cid" placeholder="Qm... or bafy...">
+              </div>
+              <div class="field col-span-2">
+                <label>SHA-256 Hash *</label>
+                <input type="text" id="anchor-hash" placeholder="0x or 64 hex chars e.g. 0xabc123...">
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="anchorEvent()" id="anchor-btn">Anchor to Blockchain</button>
+            <div id="anchor-result" class="result-box"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- UPLOAD PAYLOAD -->
+      <div class="page" id="page-upload-payload">
+        <div class="page-header">
+          <div class="page-title">Upload Compliance Payload</div>
+          <div class="page-sub">Upload a file → stored in IPFS via Pinata → hash anchored on Reltime. Full audit trail created automatically.</div>
+        </div>
+        <div class="page-content">
+          <div class="alert alert-info" style="margin-bottom:20px">File is stored in IPFS. Only the SHA-256 hash is written on-chain. The full payload is retrievable via its CID.</div>
+          <div class="card">
+            <div class="form-grid">
+              <div class="field">
+                <label>Event ID *</label>
+                <input type="text" id="upload-eventId" placeholder="e.g. BMW-OTA-2026-00042">
+              </div>
+              <div class="field">
+                <label>Event Type *</label>
+                <select id="upload-eventType">
+                  <option value="">— Select type —</option>
+                  <option value="OTA_UPDATE">OTA Update (UNECE R156)</option>
+                  <option value="AI_ADAS_DECISION">AI / ADAS Decision (EU AI Act)</option>
+                  <option value="SUPPLY_CHAIN_EVENT">Supply Chain Event (SDVerse)</option>
+                  <option value="INCIDENT_EVIDENCE">Incident Evidence (Liability)</option>
+                  <option value="SOFTWARE_ACTIVATION">Software Activation (R156 CVR)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Vehicle VIN (optional)</label>
+                <input type="text" id="upload-vin" placeholder="17-char VIN" maxlength="17">
+              </div>
+              <div class="field">
+                <label>OEM Tenant</label>
+                <select id="upload-oem">
+                  <option value="magna">Magna</option>
+                  <option value="bmw">BMW Group</option>
+                  <option value="mercedes">Mercedes-Benz</option>
+                  <option value="volkswagen">Volkswagen Group</option>
+                  <option value="gm">General Motors</option>
+                  <option value="stellantis">Stellantis</option>
+                  <option value="ford">Ford</option>
+                  <option value="toyota">Toyota</option>
+                </select>
+              </div>
+            </div>
+            <div class="field">
+              <label>Compliance Payload *</label>
+              <div class="file-drop" id="file-drop" onclick="document.getElementById('upload-file').click()">
+                <span class="file-drop-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span>
+                <div class="file-drop-text" id="file-drop-text">Drop file here or click to browse</div>
+                <div class="file-drop-sub">JSON, CSV, PDF, XML — max 4 MB</div>
+              </div>
+              <input type="file" id="upload-file" style="display:none" onchange="onFileSelect(this)">
+            </div>
+            <button class="btn btn-primary" onclick="uploadPayload()" id="upload-btn">Upload to IPFS &amp; Anchor</button>
+            <div id="upload-result" class="result-box"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CHECK INTEGRITY -->
+      <div class="page" id="page-check-integrity">
+        <div class="page-header">
+          <div class="page-title">Check Integrity</div>
+          <div class="page-sub">Verify that a compliance event has not been tampered with. Read-only — no gas, instant.</div>
+        </div>
+        <div class="page-content">
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-title" style="margin-bottom:16px">Verify Hash Against Blockchain</div>
+            <div class="form-grid">
+              <div class="field">
+                <label>Event ID *</label>
+                <input type="text" id="check-eventId" placeholder="Event ID to verify">
+              </div>
+              <div class="field">
+                <label>SHA-256 Hash *</label>
+                <input type="text" id="check-hash" placeholder="0x or 64 hex chars">
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="checkIntegrity()" id="check-btn">Verify Integrity</button>
+            <div id="check-result" class="result-box"></div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="margin-bottom:16px">Retrieve On-Chain Record</div>
+            <div class="field" style="max-width:400px">
+              <label>Event ID</label>
+              <input type="text" id="get-eventId" placeholder="Event ID to retrieve">
+            </div>
+            <button class="btn btn-ghost" onclick="getEvent()" id="get-btn">Retrieve Record</button>
+            <div id="get-result" class="result-box"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIN LOOKUP -->
+      <div class="page" id="page-lookup-event">
+        <div class="page-header">
+          <div class="page-title">VIN Lookup</div>
+          <div class="page-sub">Retrieve all compliance events for a specific Vehicle Identification Number.</div>
+        </div>
+        <div class="page-content">
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-title" style="margin-bottom:16px">Search by VIN</div>
+            <div class="field" style="max-width:360px">
+              <label>Vehicle Identification Number</label>
+              <input type="text" id="vin-input" placeholder="17-character VIN" maxlength="17" style="font-family:monospace;letter-spacing:.1em;text-transform:uppercase">
+            </div>
+            <button class="btn btn-primary" onclick="lookupVIN()">Find Events for VIN</button>
+            <div id="vin-result" style="margin-top:20px"></div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Evidence Package</div>
+                <div class="card-sub">Generate a court-ready audit report for any vehicle</div>
+              </div>
+            </div>
+            <div class="field" style="max-width:360px">
+              <label>Event ID</label>
+              <input type="text" id="evidence-eventId" placeholder="Event ID">
+            </div>
+            <button class="btn btn-ghost" onclick="getEventPayload()">Generate Evidence Report</button>
+            <div id="evidence-result" class="result-box"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUDIT SUMMARY -->
+      <div class="page" id="page-audit-summary">
+        <div class="page-header">
+          <div class="page-title">Compliance Audit Summary</div>
+          <div class="page-sub">On-chain compliance record counts by event type. Requires Auditor or Regulator role.</div>
+        </div>
+        <div class="page-content">
+          <div class="card" style="margin-bottom:20px">
+            <div class="card-header">
+              <div class="card-title">On-Chain Record Summary</div>
+              <button class="btn btn-primary" style="font-size:12px;padding:8px 16px" onclick="loadAuditSummary()">Load Summary</button>
+            </div>
+            <div id="audit-summary-content">
+              <div class="alert alert-info">Click "Load Summary" to fetch the current compliance record counts from Reltime Layer 1.</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title" style="margin-bottom:16px">Version History</div>
+            <div class="field" style="max-width:400px">
+              <label>Event ID</label>
+              <input type="text" id="history-eventId" placeholder="Event ID to check version history">
+            </div>
+            <button class="btn btn-ghost" onclick="getHistory()">Load Version History</button>
+            <div id="history-result" class="result-box"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN -->
+      <div class="page" id="page-admin-panel">
+        <div class="page-header">
+          <div class="page-title">User Administration</div>
+          <div class="page-sub">Manage OEM users and assign blockchain roles. Only admin can access this panel.</div>
+        </div>
+        <div class="page-content">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title">All Users</div>
+              <button class="btn btn-ghost" style="font-size:12px;padding:7px 14px" onclick="loadUsers()">↻ Refresh</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>OEM Tenant</th><th>Wallet</th><th>Action</th></tr></thead>
+                <tbody id="users-table-body">
+                  <tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:24px">Loading users...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast-container"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let token = localStorage.getItem("caas_token");
+let user  = null;
+const BASE = "/api/v1";
+
+// ═══════════════════════════════════════════
+// BOOT
+// ═══════════════════════════════════════════
+(async () => {
+  if (token) {
+    try {
+      const me = await api("GET", "/auth/me");
+      if (me.success) { user = me.user; showApp(); return; }
+    } catch {}
+    token = null;
+    localStorage.removeItem("caas_token");
+  }
+  showLogin();
+})();
+
+function showLogin() {
+  document.getElementById("login-screen").style.display = "flex";
+  document.getElementById("app-screen").style.display   = "none";
+}
+function showApp() {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app-screen").style.display   = "flex";
+  const name   = user.fullName || user.email;
+  const avatar = name.split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+  document.getElementById("user-avatar").textContent       = avatar;
+  document.getElementById("user-name-display").textContent = name;
+  document.getElementById("user-role-display").textContent = user.role.replace(/_/g," ").toUpperCase();
+  if (user.role === "admin") document.getElementById("nav-admin-panel").style.display = "flex";
+  checkChainHealth();
+  loadDashboard();
+}
+
+async function checkChainHealth() {
+  try {
+    const h    = await (await fetch("/health")).json();
+    const dot  = document.getElementById("chain-dot-indicator");
+    const text = document.getElementById("chain-status-text");
+    if (h.status === "healthy") {
+      dot.style.background = "#10b981";
+      text.textContent     = `Block #${h.currentBlock.toLocaleString()}`;
+    } else {
+      dot.style.background = "#DC2626";
+      text.textContent     = "Chain offline";
+    }
+  } catch {
+    document.getElementById("chain-status-text").textContent = "Unreachable";
+    document.getElementById("chain-dot-indicator").style.background = "#DC2626";
+  }
+}
+
+// ═══════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════
+function switchAuthTab(tab) {
+  ["login","register"].forEach(t => {
+    document.getElementById("tab-"+t).classList.toggle("active", t===tab);
+  });
+  document.querySelectorAll(".auth-tab").forEach((el,i) => {
+    el.classList.toggle("active", (i===0 && tab==="login") || (i===1 && tab==="register"));
+  });
+  clearAuthError();
+}
+function fillDemo(email, password) {
+  document.getElementById("login-email").value    = email;
+  document.getElementById("login-password").value = password;
+}
+async function login() {
+  const email    = document.getElementById("login-email").value.trim();
+  const password = document.getElementById("login-password").value;
+  if (!email || !password) { showAuthError("Email and password required."); return; }
+  const btn = document.getElementById("login-btn");
+  setBtnLoading(btn, true, "Signing in...");
+  clearAuthError();
+  try {
+    const data = await api("POST", "/auth/login", { email, password });
+    token = data.token; user = data.user;
+    localStorage.setItem("caas_token", token);
+    showApp();
+  } catch(e) { showAuthError(e.message || "Login failed"); }
+  finally    { setBtnLoading(btn, false, "Sign In"); }
+}
+async function register() {
+  const fullName = document.getElementById("reg-name").value.trim();
+  const email    = document.getElementById("reg-email").value.trim();
+  const password = document.getElementById("reg-password").value;
+  const oemTenant= document.getElementById("reg-tenant").value;
+  if (!fullName||!email||!password) { showAuthError("All fields required."); return; }
+  const btn = document.getElementById("register-btn");
+  setBtnLoading(btn, true, "Creating account...");
+  clearAuthError();
+  try {
+    const data = await api("POST", "/auth/register", { fullName, email, password, oemTenant });
+    token = data.token; user = data.user;
+    localStorage.setItem("caas_token", token);
+    showApp();
+    toast("success","Account Created","A blockchain wallet has been provisioned.");
+  } catch(e) { showAuthError(e.message || "Registration failed"); }
+  finally    { setBtnLoading(btn, false, "Create Account"); }
+}
+function logout() {
+  token = null; user = null;
+  localStorage.removeItem("caas_token");
+  showLogin();
+}
+function showAuthError(msg) {
+  const el = document.getElementById("auth-error");
+  el.textContent = msg; el.style.display = "block";
+}
+function clearAuthError() {
+  document.getElementById("auth-error").style.display = "none";
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function showPage(page) {
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  document.getElementById("page-"+page)?.classList.add("active");
+  document.getElementById("nav-"+page)?.classList.add("active");
+  if (page==="events-list") loadEvents();
+  if (page==="admin-panel") loadUsers();
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════
+async function loadDashboard() {
+  loadEvents();
+  try {
+    const res = await api("GET", "/events/audit/summary");
+    const d   = res.data;
+    document.getElementById("stat-ota").textContent      = d.otaUpdates;
+    document.getElementById("stat-ai").textContent       = d.aiAdasDecisions;
+    document.getElementById("stat-supply").textContent   = d.supplyChainEvents;
+    document.getElementById("stat-incident").textContent = d.incidentRecords;
+    document.getElementById("stat-software").textContent = d.softwareActivations;
+    document.getElementById("stat-total").textContent    = d.total;
+  } catch {
+    ["ota","ai","supply","incident","software","total"].forEach(k => {
+      const el = document.getElementById("stat-"+k);
+      if (el) el.textContent = "—";
+    });
+  }
+}
+async function loadEvents() {
+  try {
+    const res  = await api("GET", "/events/list");
+    const rows = res.data || [];
+    const html = rows.length === 0
+      ? `<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:24px">No events anchored yet.</td></tr>`
+      : rows.map(r=>`
+        <tr>
+          <td style="font-family:monospace;font-size:12px;font-weight:600;color:var(--gray-900)" title="${r.event_id}">${r.event_id.length>24?r.event_id.slice(0,24)+"…":r.event_id}</td>
+          <td>${eventTypeBadge(r.event_type)}</td>
+          <td class="vin-code">${r.vehicle_vin||"—"}</td>
+          <td><span class="badge badge-gray" style="font-size:9px">${r.oem_tenant||"magna"}</span></td>
+          <td style="font-size:12px;color:var(--gray-500)">${r.submitted_at?r.submitted_at.slice(0,16).replace("T"," "):"—"}</td>
+          <td style="font-size:12px;color:var(--gray-700)">${r.submitter_name||"—"}${r.is_mine?' <span class="badge badge-green" style="font-size:9px">mine</span>':''}</td>
+        </tr>`).join("");
+    document.getElementById("recent-events-body").innerHTML = html;
+    const allEl = document.getElementById("all-events-body");
+    if (allEl) allEl.innerHTML = html;
+  } catch(e) {
+    const msg = `<tr><td colspan="6" style="text-align:center;color:var(--error);padding:24px">${e.message}</td></tr>`;
+    document.getElementById("recent-events-body").innerHTML = msg;
+  }
+}
+
+// ═══════════════════════════════════════════
+// ANCHOR EVENT
+// ═══════════════════════════════════════════
+async function anchorEvent() {
+  const eventId    = document.getElementById("anchor-eventId").value.trim();
+  const eventType  = document.getElementById("anchor-eventType").value;
+  const hash       = document.getElementById("anchor-hash").value.trim();
+  const vehicleVIN = document.getElementById("anchor-vin").value.trim().toUpperCase();
+  const metadataCID= document.getElementById("anchor-cid").value.trim();
+  if (!eventId||!eventType||!hash) { toast("error","Missing Fields","Event ID, type and hash are required."); return; }
+  const btn    = document.getElementById("anchor-btn");
+  const result = document.getElementById("anchor-result");
+  setBtnLoading(btn, true, "Anchoring to blockchain...");
+  result.className = "result-box";
+  try {
+    const res = await api("POST", "/events", { eventId, eventType, hash, vehicleVIN:vehicleVIN||undefined, metadataCID:metadataCID||undefined });
+    result.className = "result-box success show";
+    result.innerHTML = `
+      <div class="result-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg> Event Anchored on Reltime Blockchain</div>
+      ${rf("Event ID", eventId)}${rf("Event Type", eventTypeBadge(eventType))}
+      ${vehicleVIN?rf("Vehicle VIN",`<span class="vin-code">${vehicleVIN}</span>`):""}
+      ${rf("Transaction Hash",`<span class="result-value tx">${res.data.transactionHash}</span>`)}
+      ${rf("Block Number", res.data.blockNumber)}${rf("Status",`<span class="result-value valid">${res.data.status}</span>`)}`;
+    toast("success","Anchored",`Event ${eventId} recorded on Reltime Layer 1.`);
+    loadDashboard();
+  } catch(e) {
+    result.className = "result-box error show";
+    result.innerHTML = `<div class="result-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Anchoring Failed</div><p style="font-size:13px;color:var(--error)">${e.message}</p>`;
+    toast("error","Anchor Failed",e.message);
+  } finally { setBtnLoading(btn, false, "Anchor to Blockchain"); }
+}
+
+// ═══════════════════════════════════════════
+// UPLOAD PAYLOAD
+// ═══════════════════════════════════════════
+let selectedFile = null;
+function onFileSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  selectedFile = file;
+  document.getElementById("file-drop-text").textContent = `✓ ${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+  document.getElementById("file-drop").style.borderColor = "var(--red)";
+  document.getElementById("file-drop").style.background  = "var(--red-light)";
+}
+window.addEventListener("load", () => {
+  const dz = document.getElementById("file-drop");
+  if (!dz) return;
+  dz.addEventListener("dragover",  e=>{e.preventDefault();dz.classList.add("drag-over")});
+  dz.addEventListener("dragleave", ()=>dz.classList.remove("drag-over"));
+  dz.addEventListener("drop", e=>{
+    e.preventDefault(); dz.classList.remove("drag-over");
+    const file = e.dataTransfer.files[0];
+    if (file) { selectedFile=file; document.getElementById("file-drop-text").textContent=`✓ ${file.name} (${(file.size/1024).toFixed(1)} KB)`; }
+  });
+});
+async function uploadPayload() {
+  const eventId   = document.getElementById("upload-eventId").value.trim();
+  const eventType = document.getElementById("upload-eventType").value;
+  const vin       = document.getElementById("upload-vin").value.trim().toUpperCase();
+  const oem       = document.getElementById("upload-oem").value;
+  if (!eventId||!eventType)  { toast("error","Missing Fields","Event ID and type are required."); return; }
+  if (!selectedFile)         { toast("error","No File","Please select a file to upload."); return; }
+  const btn    = document.getElementById("upload-btn");
+  const result = document.getElementById("upload-result");
+  setBtnLoading(btn, true, "Uploading to IPFS & anchoring...");
+  result.className = "result-box";
+  try {
+    const fd = new FormData();
+    fd.append("file", selectedFile);
+    fd.append("eventId", eventId);
+    fd.append("eventType", eventType);
+    if (vin) fd.append("vehicleVIN", vin);
+    if (oem) fd.append("oemTenant", oem);
+    const res = await apiForm("/events/upload", fd);
+    const d   = res.data;
+    result.className = "result-box success show";
+    result.innerHTML = `
+      <div class="result-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg> Payload Uploaded &amp; Anchored</div>
+      ${rf("Event ID",d.eventId)}${rf("Event Type",eventTypeBadge(d.eventType))}
+      ${d.vehicleVIN?rf("Vehicle VIN",`<span class="vin-code">${d.vehicleVIN}</span>`):""}
+      ${rf("Compliance Framework",`<span class="badge badge-red">${d.complianceFramework}</span>`)}
+      ${rf("File",`${d.filename} (${(d.sizeBytes/1024).toFixed(1)} KB)`)}
+      ${rf("SHA-256 Hash",`<span class="result-value hash">${d.hash}</span>`)}
+      ${rf("IPFS File CID",`<a href="${d.pinataUrl}" target="_blank" style="color:var(--red);font-size:12px;font-family:monospace">${d.fileCid}</a>`)}
+      ${rf("Metadata CID",`<span class="result-value hash" style="font-size:11px">${d.metadataCID}</span>`)}
+      ${rf("Transaction Hash",`<span class="result-value tx">${d.transactionHash}</span>`)}
+      ${rf("Block Number",d.blockNumber)}`;
+    toast("success","Upload Complete",`${d.filename} anchored in block ${d.blockNumber}.`);
+    loadDashboard();
+  } catch(e) {
+    result.className = "result-box error show";
+    result.innerHTML = `<div class="result-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Upload Failed</div><p style="font-size:13px;color:var(--error)">${e.message}</p>`;
+    toast("error","Upload Failed",e.message);
+  } finally { setBtnLoading(btn, false, "Upload to IPFS & Anchor"); }
+}
+
+// ═══════════════════════════════════════════
+// CHECK INTEGRITY
+// ═══════════════════════════════════════════
+async function checkIntegrity() {
+  const eventId = document.getElementById("check-eventId").value.trim();
+  const hash    = document.getElementById("check-hash").value.trim();
+  if (!eventId||!hash) { toast("error","Missing Fields","Event ID and hash required."); return; }
+  const btn    = document.getElementById("check-btn");
+  const result = document.getElementById("check-result");
+  setBtnLoading(btn, true, "Verifying...");
+  result.className = "result-box";
+  try {
+    const res = await api("GET", `/events/check/${encodeURIComponent(eventId)}/${encodeURIComponent(hash)}`);
+    const d   = res.data;
+    const ok  = d.isValid;
+    result.className = `result-box ${ok?"success":"error"} show`;
+    result.innerHTML = `
+      <div class="result-title">${ok?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg> INTEGRITY VERIFIED':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> INTEGRITY FAILED — Tampering Detected'}</div>
+      ${rf("Event ID",d.eventId)}
+      ${d.vehicleVIN?rf("VIN",`<span class="vin-code">${d.vehicleVIN}</span>`):""}
+      ${d.eventTypeName?rf("Event Type",eventTypeBadge(d.eventTypeName)):""}
+      ${rf("Result",`<span class="result-value ${ok?"valid":"invalid"}">${ok?"VALID — No tampering detected":"INVALID — Hash mismatch"}</span>`)}
+      ${rf("Stored Hash",`<span class="result-value hash">${d.storedHash}</span>`)}
+      ${rf("Provided Hash",`<span class="result-value hash">${d.providedHash}</span>`)}
+      ${d.storedTimestamp?rf("Anchored At",d.storedTimestamp):""}`;
+    toast(ok?"success":"error", ok?"Integrity Valid":"Integrity Failed!", ok?"Hash matches on-chain record.":"Mismatch detected.");
+  } catch(e) {
+    result.className = "result-box error show";
+    result.innerHTML = `<div class="result-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Check Failed</div><p style="font-size:13px;color:var(--error)">${e.message}</p>`;
+  } finally { setBtnLoading(btn, false, "Verify Integrity"); }
+}
+async function getEvent() {
+  const eventId = document.getElementById("get-eventId").value.trim();
+  if (!eventId) { toast("error","Missing","Event ID required."); return; }
+  const btn    = document.getElementById("get-btn");
+  const result = document.getElementById("get-result");
+  setBtnLoading(btn, true, "Retrieving...");
+  try {
+    const res = await api("GET", `/events/${encodeURIComponent(eventId)}`);
+    const d   = res.data;
+    result.className = "result-box success show";
+    result.innerHTML = `
+      <div class="result-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg> On-Chain Record</div>
+      ${rf("Event ID",d.eventId)}${rf("Event Type",eventTypeBadge(d.eventTypeName))}
+      ${d.vehicleVIN?rf("Vehicle VIN",`<span class="vin-code">${d.vehicleVIN}</span>`):""}
+      ${rf("Hash",`<span class="result-value hash">${d.hash}</span>`)}
+      ${rf("IPFS CID",`<span class="result-value" style="font-size:11px">${d.metadataCID||"—"}</span>`)}
+      ${rf("Submitter",`<span class="result-value" style="font-size:11px">${d.submitter}</span>`)}
+      ${rf("Anchored At (UTC)",d.timestampISO)}`;
+  } catch(e) {
+    result.className = "result-box error show";
+    result.innerHTML = `<div class="result-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Not Found</div><p style="font-size:13px;color:var(--error)">${e.message}</p>`;
+  } finally { setBtnLoading(btn, false, "Retrieve Record"); }
+}
+
+// ═══════════════════════════════════════════
+// VIN LOOKUP
+// ═══════════════════════════════════════════
+async function lookupVIN() {
+  const vin    = document.getElementById("vin-input").value.trim().toUpperCase();
+  if (!vin) { toast("error","Missing","Enter a VIN."); return; }
+  const result = document.getElementById("vin-result");
+  result.innerHTML = `<p style="font-size:13px;color:var(--gray-500)">Searching events for VIN <span class="vin-code">${vin}</span>...</p>`;
+  try {
+    const res  = await api("GET", "/events/list");
+    const rows = (res.data||[]).filter(r=>r.vehicle_vin===vin);
+    if (rows.length===0) {
+      result.innerHTML = `<div class="alert alert-warn">No events found for VIN <span class="vin-code">${vin}</span>.</div>`;
+      return;
+    }
+    result.innerHTML = `
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Events for VIN: <span class="vin-code">${vin}</span></div><div class="card-sub">${rows.length} event(s) found</div></div>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Event ID</th><th>Type</th><th>OEM</th><th>File</th><th>Submitted</th></tr></thead>
+          <tbody>${rows.map(r=>`
+            <tr>
+              <td style="font-family:monospace;font-size:12px;font-weight:600;color:var(--gray-900)">${r.event_id}</td>
+              <td>${eventTypeBadge(r.event_type)}</td>
+              <td><span class="badge badge-gray">${r.oem_tenant||"magna"}</span></td>
+              <td style="font-size:12px;color:var(--gray-600)">${r.filename||"—"}</td>
+              <td style="font-size:12px;color:var(--gray-500)">${r.submitted_at?r.submitted_at.slice(0,16).replace("T"," "):"—"}</td>
+            </tr>`).join("")}
+          </tbody>
+        </table></div>
+      </div>`;
+  } catch(e) { result.innerHTML = `<div class="alert alert-error">${e.message}</div>`; }
+}
+async function getEventPayload() {
+  const eventId = document.getElementById("evidence-eventId").value.trim();
+  if (!eventId) { toast("error","Missing","Event ID required."); return; }
+  const result = document.getElementById("evidence-result");
+  try {
+    const res = await api("GET", `/events/${encodeURIComponent(eventId)}/payload`);
+    const d   = res.data;
+    const p   = d.payload || {};
+    result.className = "result-box success show";
+    result.innerHTML = `
+      <div class="result-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg> Evidence Package — Court Ready</div>
+      ${rf("Event ID",d.eventId)}
+      ${d.vehicleVIN?rf("Vehicle VIN",`<span class="vin-code">${d.vehicleVIN}</span>`):""}
+      ${d.eventTypeName?rf("Event Type",eventTypeBadge(d.eventTypeName)):""}
+      ${rf("IPFS CID",`<span class="result-value hash" style="font-size:11px">${d.metadataCID}</span>`)}
+      ${p.complianceFramework?rf("Framework",`<span class="badge badge-red">${p.complianceFramework}</span>`):""}
+      ${p.submittedBy?rf("Submitted By",p.submittedBy):""}
+      ${p.submittedAt?rf("Submitted At (UTC)",p.submittedAt):""}
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+        <div class="result-label">Full Payload (IPFS)</div>
+        <pre style="font-size:11px;color:var(--gray-700);background:var(--gray-50);padding:12px;border-radius:6px;overflow-x:auto;margin-top:6px;max-height:200px;overflow-y:auto;border:1px solid var(--border)">${JSON.stringify(p,null,2)}</pre>
+      </div>`;
+  } catch(e) {
+    result.className = "result-box error show";
+    result.innerHTML = `<div class="result-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Failed</div><p style="font-size:13px;color:var(--error)">${e.message}</p>`;
+  }
+}
+
+// ═══════════════════════════════════════════
+// AUDIT SUMMARY
+// ═══════════════════════════════════════════
+async function loadAuditSummary() {
+  const el = document.getElementById("audit-summary-content");
+  el.innerHTML = `<div style="display:flex;align-items:center;gap:10px;color:var(--gray-400);font-size:13px"><div class="spinner"></div>Loading from Reltime Layer 1...</div>`;
+  try {
+    const res = await api("GET", "/events/audit/summary");
+    const d   = res.data;
+    el.innerHTML = `
+      <div class="stats-grid" style="margin-top:4px">
+        <div class="stat-card type-OTA_UPDATE"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/><path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8c2.3 2.3 2.3 6.1 0 8.5"/><path d="M19.1 4.9C23 8.8 23 15.1 19.1 19.1"/></svg></div><div class="stat-value">${d.otaUpdates}</div><div class="stat-label">OTA Updates</div></div>
+        <div class="stat-card type-AI_ADAS_DECISION"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M15 2v2"/><path d="M9 2v2"/><path d="M15 20v2"/><path d="M9 20v2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M2 15h2"/><path d="M2 9h2"/></svg></div><div class="stat-value">${d.aiAdasDecisions}</div><div class="stat-label">AI / ADAS</div></div>
+        <div class="stat-card type-SUPPLY_CHAIN_EVENT"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div><div class="stat-value">${d.supplyChainEvents}</div><div class="stat-label">Supply Chain</div></div>
+        <div class="stat-card type-INCIDENT_EVIDENCE"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></div><div class="stat-value">${d.incidentRecords}</div><div class="stat-label">Incidents</div></div>
+        <div class="stat-card type-SOFTWARE_ACTIVATION"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"/><path d="M7 3v4a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V3.2"/></svg></div><div class="stat-value">${d.softwareActivations}</div><div class="stat-label">SW Activations</div></div>
+        <div class="stat-card" style="--accent:#1A1A1A"><div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg></div><div class="stat-value">${d.total}</div><div class="stat-label">Total Records</div></div>
+      </div>
+      <div class="alert alert-success" style="margin-top:16px">Data retrieved live from Reltime Layer 1 · ${new Date().toUTCString()}</div>`;
+    toast("success","Audit Summary Loaded","Compliance record counts retrieved from blockchain.");
+  } catch(e) {
+    el.innerHTML = `<div class="alert alert-error">Failed to load: ${e.message}</div>`;
+  }
+}
+async function getHistory() {
+  const eventId = document.getElementById("history-eventId").value.trim();
+  if (!eventId) { toast("error","Missing","Event ID required."); return; }
+  const result = document.getElementById("history-result");
+  try {
+    const res = await api("GET", `/events/history/${encodeURIComponent(eventId)}`);
+    const d   = res.data;
+    result.className = "result-box success show";
+    result.innerHTML = `
+      <div class="result-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg> Version History — ${d.totalVersions} version(s)</div>
+      ${d.versions.map(v=>`<div class="result-field"><div class="result-label">Version ${v.version}</div><div class="result-value hash">${v.hash}</div></div>`).join("")}`;
+  } catch(e) {
+    result.className = "result-box error show";
+    result.innerHTML = `<div class="result-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg> Not Found</div><p style="font-size:13px;color:var(--error)">${e.message}</p>`;
+  }
+}
+
+// ═══════════════════════════════════════════
+// ADMIN
+// ═══════════════════════════════════════════
+async function loadUsers() {
+  const tbody = document.getElementById("users-table-body");
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:16px"><div class="spinner" style="margin:0 auto"></div></td></tr>`;
+  try {
+    const res   = await api("GET", "/admin/users");
+    const users = res.users || [];
+    if (users.length===0) { tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:24px">No users found.</td></tr>`; return; }
+    tbody.innerHTML = users.map(u=>`
+      <tr>
+        <td style="font-weight:600;color:var(--gray-900)">${u.fullName}</td>
+        <td style="font-size:12px;color:var(--gray-500)">${u.email}</td>
+        <td><span class="badge role-${u.role}">${u.role.replace(/_/g," ")}</span></td>
+        <td><span class="badge badge-gray" style="font-size:9px">${u.oemTenant||"magna"}</span></td>
+        <td style="font-family:monospace;font-size:11px;color:var(--gray-400)">${u.walletAddress?u.walletAddress.slice(0,10)+"…":"—"}</td>
+        <td style="display:flex;align-items:center;gap:8px">
+          <select id="role-select-${u.id}" style="font-size:12px;padding:5px 8px;background:var(--white);border:1.5px solid var(--border);border-radius:var(--radius);color:var(--gray-900)">
+            <option value="pending" ${u.role==="pending"?"selected":""}>pending</option>
+            <option value="engineer" ${u.role==="engineer"?"selected":""}>engineer</option>
+            <option value="compliance_officer" ${u.role==="compliance_officer"?"selected":""}>compliance officer</option>
+            <option value="auditor" ${u.role==="auditor"?"selected":""}>auditor</option>
+            <option value="regulator" ${u.role==="regulator"?"selected":""}>regulator</option>
+            <option value="admin" ${u.role==="admin"?"selected":""}>admin</option>
+          </select>
+          <button class="btn btn-dark" style="padding:5px 12px;font-size:11px" onclick="assignRole(${u.id},'${u.email}')">Assign</button>
+        </td>
+      </tr>`).join("");
+  } catch(e) { tbody.innerHTML=`<tr><td colspan="6" style="text-align:center;color:var(--error);padding:24px">${e.message}</td></tr>`; }
+}
+async function assignRole(userId, email) {
+  const role = document.getElementById(`role-select-${userId}`).value;
+  try {
+    await api("PUT", `/admin/users/${userId}/role`, { role });
+    toast("success","Role Assigned",`${email} → ${role}`);
+    loadUsers();
+  } catch(e) { toast("error","Failed",e.message); }
+}
+
+// ═══════════════════════════════════════════
+// API HELPERS
+// ═══════════════════════════════════════════
+async function api(method, path, body) {
+  const opts = {
+    method,
+    headers:{ "Content-Type":"application/json", ...(token?{Authorization:`Bearer ${token}`}:{}) }
+  };
+  if (body) opts.body = JSON.stringify(body);
+  const res  = await fetch(BASE+path, opts);
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error||data.detail||`HTTP ${res.status}`);
+  return data;
+}
+async function apiForm(path, formData) {
+  const res  = await fetch(BASE+path, { method:"POST", headers:{Authorization:`Bearer ${token}`}, body:formData });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error||data.detail||`HTTP ${res.status}`);
+  return data;
+}
+
+// ═══════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════
+function rf(label, value) {
+  return `<div class="result-field"><div class="result-label">${label}</div><div style="font-size:13px;color:var(--gray-700)">${value}</div></div>`;
+}
+function eventTypeBadge(type) {
+  const map = {
+    OTA_UPDATE:          ["badge-red",    "OTA Update"],
+    AI_ADAS_DECISION:    ["badge-purple", "AI / ADAS"],
+    SUPPLY_CHAIN_EVENT:  ["badge-amber",  "Supply Chain"],
+    INCIDENT_EVIDENCE:   ["badge-gray",   "Incident"],
+    SOFTWARE_ACTIVATION: ["badge-green",  "SW Activation"],
+  };
+  const [cls, label] = map[type] || ["badge-gray", type];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
+function setBtnLoading(btn, loading, label) {
+  if (loading) {
+    btn.disabled  = true;
+    btn.innerHTML = `<div class="spinner spinner-white" style="width:14px;height:14px;border-width:2px"></div>${label}`;
+  } else {
+    btn.disabled  = false;
+    btn.textContent = label;
+  }
+}
+function toast(type, title, msg) {
+  const container = document.getElementById("toast-container");
+  const el        = document.createElement("div");
+  el.className    = `toast ${type}`;
+  el.innerHTML    = `<div class="toast-body"><div class="toast-title">${title}</div><div class="toast-msg">${msg}</div></div>`;
+  container.appendChild(el);
+  setTimeout(()=>{ el.style.opacity="0"; el.style.transition="opacity .3s"; setTimeout(()=>el.remove(),300); }, 4000);
+}
+</script>
+</body>
+</html>

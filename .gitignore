@@ -1,0 +1,27 @@
+node_modules/
+
+# Secrets — never commit
+.env
+.env.local
+.env.*.local
+CREDENTIALS.md
+
+# Runtime data
+data/*.db
+data/*.db-journal
+logs/
+*.log
+
+# Hardhat build cache (regenerable; ABI artifacts are kept)
+cache/
+artifacts/build-info/
+
+# Vercel
+.vercel
+
+# OS / editor
+.DS_Store
+*.swp
+
+# Stray agent memory notes (belong in ~/.claude memory dir, not the repo)
+memory/
