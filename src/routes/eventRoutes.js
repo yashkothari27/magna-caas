@@ -253,6 +253,28 @@ router.get(
 );
 
 // ══════════════════════════════════════════════════════════
+// GET /api/v1/events/vin/:vin/audit — Fault attribution audit (internal, JWT)
+// Same engine as the external /external/v1/vin/:vin/audit endpoint, for use
+// inside the app by auditors/regulators/admins without issuing an API key.
+// (must be before /:eventId to avoid route shadowing)
+// ══════════════════════════════════════════════════════════
+router.get(
+  "/vin/:vin/audit",
+  authorizeRole("auditor", "regulator", "admin", "compliance_officer"),
+  async (req, res) => {
+    try {
+      const { getVehicleAudit } = require("../services/faultAttributionService");
+      const vin = req.params.vin.toUpperCase();
+      const audit = await getVehicleAudit(vin);
+      res.json({ success: true, data: audit });
+    } catch (error) {
+      logger.error(`GET /events/vin/${req.params.vin}/audit failed: ${error.message}`);
+      res.status(500).json({ success: false, error: "Fault attribution audit failed", detail: error.message });
+    }
+  }
+);
+
+// ══════════════════════════════════════════════════════════
 // GET /api/v1/events/:eventId — Retrieve anchored event
 // ══════════════════════════════════════════════════════════
 router.get(

@@ -3,6 +3,7 @@ const { param, body, validationResult } = require("express-validator");
 const db = require("../db/database");
 const blockchainService = require("../services/blockchainService");
 const { authorizeRole } = require("../middleware/auth");
+const { createApiKey, listApiKeys, revokeApiKey } = require("../services/apiKeyService");
 const logger = require("../logger");
 
 const router = express.Router();
@@ -87,6 +88,55 @@ router.delete("/users/:id", [param("id").isInt(), validate], (req, res) => {
   db.prepare("DELETE FROM users WHERE id = ?").run(req.params.id);
   logger.info(`Admin deleted user: ${user.email}`);
   res.json({ success: true, message: `User ${user.email} deleted.` });
+});
+
+const VALID_PARTNER_TYPES = ["insurance", "oem_supplier", "regulator"];
+const VALID_SCOPES = ["vin_audit", "ota_status", "compliance_check"];
+
+// GET /admin/api-keys — list all partner API keys (hashed; raw key never re-shown)
+router.get("/api-keys", (req, res) => {
+  res.json({ success: true, keys: listApiKeys() });
+});
+
+// POST /admin/api-keys — issue a new partner API key (raw key returned ONCE)
+router.post(
+  "/api-keys",
+  [
+    body("partnerName").isString().notEmpty(),
+    body("partnerType").isIn(VALID_PARTNER_TYPES),
+    body("scopes").isArray({ min: 1 }),
+    body("scopes.*").isIn(VALID_SCOPES),
+    body("oemScope").optional({ checkFalsy: true }).isString(),
+    validate,
+  ],
+  (req, res) => {
+    try {
+      const { partnerName, partnerType, scopes, oemScope, rateLimit } = req.body;
+      const result = createApiKey({
+        partnerName, partnerType, scopes, oemScope,
+        rateLimit: rateLimit || 60,
+        createdBy: req.user.userId,
+      });
+      logger.info(`Admin issued API key for partner '${partnerName}' (${partnerType})`);
+      res.status(201).json({
+        success: true,
+        message: "API key created. Copy it now — it will not be shown again.",
+        apiKey: result.rawKey,
+        prefix: result.prefix,
+        id: result.id,
+      });
+    } catch (error) {
+      logger.error(`POST /admin/api-keys failed: ${error.message}`);
+      res.status(500).json({ success: false, error: "API key creation failed", detail: error.message });
+    }
+  }
+);
+
+// DELETE /admin/api-keys/:id — revoke a partner API key
+router.delete("/api-keys/:id", [param("id").isInt(), validate], (req, res) => {
+  revokeApiKey(req.params.id);
+  logger.info(`Admin revoked API key id=${req.params.id}`);
+  res.json({ success: true, message: "API key revoked." });
 });
 
 module.exports = router;

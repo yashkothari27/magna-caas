@@ -9,6 +9,7 @@ const { authenticateToken } = require("./middleware/auth");
 const eventRoutes  = require("./routes/eventRoutes");
 const authRoutes   = require("./routes/authRoutes");
 const adminRoutes  = require("./routes/adminRoutes");
+const externalRoutes = require("./routes/externalRoutes");
 const blockchainService = require("./services/blockchainService");
 
 const app = express();
@@ -29,7 +30,7 @@ app.use(cors({ origin: config.corsOrigins }));
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static(path.join(__dirname, "../public")));
 
-app.use("/api/", (_req, res, next) => {
+app.use(["/api/", "/external/"], (_req, res, next) => {
   res.setHeader("Content-Security-Policy", "default-src 'none'");
   next();
 });
@@ -40,6 +41,13 @@ const limiter = rateLimit({
   message: { error: "Too many requests, please try again later." },
 });
 app.use("/api/", limiter);
+
+const externalLimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 60,
+  message: { error: "Too many requests, please try again later." },
+});
+app.use("/external/", externalLimiter);
 
 // Web UI
 app.get("/", (_req, res) => res.redirect(302, "/app"));
@@ -79,6 +87,9 @@ app.get("/health/debug", (req, res) => {
 app.use("/api/v1/auth",   authRoutes);
 app.use("/api/v1/events", authenticateToken, eventRoutes);
 app.use("/api/v1/admin",  authenticateToken, adminRoutes);
+
+// External Compliance-as-Code API — partner API-key auth, not employee JWT.
+app.use("/external/v1", externalRoutes);
 
 // 404
 app.use((req, res) => res.status(404).json({ error: "Endpoint not found" }));
