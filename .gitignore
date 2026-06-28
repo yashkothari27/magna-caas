@@ -25,3 +25,4 @@ artifacts/build-info/
 
 # Stray agent memory notes (belong in ~/.claude memory dir, not the repo)
 memory/
+.env*

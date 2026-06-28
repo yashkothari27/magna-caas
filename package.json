@@ -4,7 +4,7 @@
   "description": "Magna Compliance-as-a-Service — Vehicle Compliance Blockchain Platform powered by Reltime DCI",
   "main": "src/server.js",
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "scripts": {
     "compile": "hardhat compile",
